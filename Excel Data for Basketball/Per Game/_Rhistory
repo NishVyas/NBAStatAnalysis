@@ -1,0 +1,42 @@
+setwd("C:/Users/nishant/Desktop/Excel Data for Basketball/Per Game")
+## Lines 1-32 are used to read in my data and use just the career statistics
+x <- c("Mike Bibby", "Chauncy Billups", "Mookie Blaylock", "Eric Bledsoe", "Muggsy Bogues"
+, "Terrell Brandon", "Sam Cassell", "Mike Conley"
+, "Stephen Curry", "Baron Davis", "Goran Dragic"
+, "Steve Francis", "Anfernee Hardawayan", "Tim Hardawayti"
+, "Ron Harper", "Jrue Holiday", "Kyrie Irving", "Allen Iverson"
+, "Mark Jackson", "Brandon Jennings", "Kevin Johnsonke"
+, "Magic Johnsonma", "Jason Kidd", "Fat Lever", "Damian Lillard"
+, "Kyle Lowry", "Stephon Marbury", "Andre Miller", "Sidney Moncrief"
+, "Steve Nash", "Tony Parker", "Chris Paul", "Gary Payton"
+, "Terry Porter", "Mark Price", "Rajon Rondo", "Derrick Rose"
+, "Scott Skiles", "Kenny Smith", "John Stockton", "Rod Strickland"
+, "Jeff Teague", "Isiah Thomasisi", "Isaiah Thomasisa", "Nick Vanexil"
+, "John Wall", "Spudd Webb", "Russell Westbrook", "Deron Williams")
+number <- c("01_per_game.csv")
+players <- c("players")
+splitnames <- strsplit(x, split=" ")
+unlist(splitnames)
+lastNameFirstInitial <- unlist(lapply(splitnames, function(v) v[[2]]))
+lastname <- tolower(unlist(lapply(splitnames, function(v) v[[2]])))
+fn <- tolower(substr(lastNameFirstInitial, 1, 1))
+playername <- paste(players,fn,sep="_",lastname,number)
+allcsv <- list()
+for (i in playername){
+allcsv[[i]] <- read.csv(i, header = TRUE, stringsAsFactors = FALSE)
+}
+#output <- data.frame(matrix(unlist(allcsv), nrow = 910), stringsAsFactors = FALSE)
+#unlist(allcsv)[1:40]
+output <- do.call(rbind.data.frame, allcsv)
+career<-output[output[,1]=="Career",]
+row.names(career) <- x
+pg.s <- scale(career[6:30])
+## Then i create a scree plot
+wss=numeric(0)
+## This calculation collects quantity called "total within-cluster sum of
+## squares" for each number of clusters from 2 to 40.
+for (i in 2:20){
+wss[i]=sum(kmeans(pg.s,i)$withinss)
+}
+plot(2:20,wss[2:20],type="b")
+grid(col="black")
